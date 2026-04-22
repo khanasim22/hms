@@ -1,0 +1,713 @@
+$font-sans: "Inter", sans-serif;
+$black: #000;
+$white: #fff;
+
+$green: #34d399;
+$green-soft: #6ee7b7;
+$amber: #fbbf24;
+
+$z-video: 0;
+$z-overlay: 1;
+$z-ui: 10;
+
+$radius-xxl: 999px;
+$radius-lg: 18px;
+
+@mixin fixed-inset($z-index: null) {
+    position: fixed;
+    inset: 0;
+
+    @if $z-index != null {
+        z-index: $z-index;
+    }
+}
+
+@mixin glass-card(
+    $bg: rgba(0, 0, 0, 0.45),
+    $blur: 24px,
+    $saturate: 1.2,
+    $border: rgba(255, 255, 255, 0.11),
+    $radius: $radius-lg
+) {
+    background: $bg;
+    backdrop-filter: blur($blur) saturate($saturate);
+    -webkit-backdrop-filter: blur($blur) saturate($saturate);
+    border: 1px solid $border;
+    border-radius: $radius;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: $font-sans;
+    background: $black;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* ── Background Video ── */
+.bg-video {
+    @include fixed-inset($z-video);
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.85;
+}
+
+/* ── Gradient Overlays ── */
+.overlay-right {
+    @include fixed-inset($z-overlay);
+    background: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0.1),
+        rgba(0, 0, 0, 0.35),
+        rgba(0, 0, 0, 0.82)
+    );
+}
+
+.overlay-top {
+    @include fixed-inset($z-overlay);
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.25) 0%,
+        transparent 40%,
+        rgba(0, 0, 0, 0.55) 100%
+    );
+}
+
+/* ── Clock (top-left) ── */
+.clock-area {
+    position: fixed;
+    top: 32px;
+    left: 32px;
+    z-index: $z-ui;
+
+    .clock-time {
+        font-size: 64px;
+        font-weight: 800;
+        color: rgba(255, 255, 255, 0.95);
+        letter-spacing: -2px;
+        line-height: 1;
+        text-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+    }
+
+    .clock-date {
+        font-size: 15px;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.65);
+        margin-top: 8px;
+        letter-spacing: 0.3px;
+    }
+
+    .live-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        margin-top: 12px;
+        background: rgba(0, 0, 0, 0.25);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: $radius-xxl;
+        padding: 5px 13px;
+        backdrop-filter: blur(8px);
+
+        span.label {
+            font-size: 11px;
+            font-weight: 700;
+            color: $green-soft;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+    }
+
+    .fullscreen-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        margin-top: 10px;
+        background: rgba(0, 0, 0, 0.25);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: $radius-xxl;
+        padding: 6px 13px;
+        backdrop-filter: blur(8px);
+        cursor: pointer;
+        color: rgba(255, 255, 255, 0.85);
+        font-family: $font-sans;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: $white;
+        }
+
+        .label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+    }
+
+    .fullscreen-icon {
+        width: 14px;
+        height: 14px;
+    }
+
+    .pulse-dot {
+        position: relative;
+        width: 8px;
+        height: 8px;
+
+        .ping {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: $green;
+            opacity: 0.6;
+            animation: ping 1.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+
+        .core {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: $green;
+        }
+    }
+}
+
+@keyframes ping {
+    75%,
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+/* ── HMS Brand (bottom-left) ── */
+.brand {
+    position: fixed;
+    bottom: 28px;
+    left: 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: $z-ui;
+
+    &-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        a img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+        }
+    }
+
+    &-name {
+        font-size: 14px;
+        font-weight: 700;
+        color: $white;
+    }
+
+    &-sub {
+        font-size: 11px;
+        font-weight: 400;
+        color: rgba(255, 255, 255, 0.5);
+        margin-top: 2px;
+    }
+}
+
+/* ── Queue Panel (right) ── */
+.queue-panel {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    bottom: 24px;
+    width: 460px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: $z-ui;
+
+    .glass {
+        @include glass-card();
+    }
+
+    /* Header card */
+    .panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 22px;
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .live-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: $green;
+            box-shadow: 0 0 10px rgba(52, 211, 153, 0.6);
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        .panel-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: $white;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        /* Countdown ring */
+        .countdown-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ring-container {
+            position: relative;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            svg {
+                position: absolute;
+                transform: rotate(-90deg);
+            }
+        }
+
+        .countdown-num {
+            font-size: 12px;
+            font-weight: 800;
+            color: $white;
+            position: relative;
+            z-index: 1;
+        }
+
+        .countdown-label {
+            text-align: right;
+
+            .top {
+                font-size: 9px;
+                font-weight: 700;
+                color: rgba(255, 255, 255, 0.35);
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+            }
+
+            .bottom {
+                font-size: 11px;
+                font-weight: 500;
+                color: rgba(255, 255, 255, 0.75);
+                margin-top: 2px;
+            }
+        }
+    }
+
+    @keyframes pulse-glow {
+        0%,
+        100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.4;
+        }
+    }
+
+    /* Stats + Tabs card */
+    .stats-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 22px;
+
+        .stats-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .stat {
+            text-align: center;
+
+            .stat-num {
+                font-size: 22px;
+                font-weight: 800;
+
+                &.green {
+                    color: $green;
+                }
+
+                &.amber {
+                    color: $amber;
+                }
+
+                &.white {
+                    color: $white;
+                }
+            }
+
+            .stat-label {
+                font-size: 9px;
+                font-weight: 700;
+                color: rgba(255, 255, 255, 0.35);
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+                margin-top: 2px;
+            }
+        }
+
+        .stat-divider {
+            width: 1px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Tab pills */
+        .tabs {
+            display: flex;
+            gap: 4px;
+           background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 4px;
+
+            .tab-btn {
+                padding: 6px 14px;
+                border-radius: 9px;
+                border: none;
+                background: transparent;
+                font-size: 11px;
+                font-weight: 700;
+                color: $white;
+                cursor: text;
+                transition: all 0.2s;
+                font-family: $font-sans;
+                letter-spacing: 0.04em;
+            }
+        }
+    }
+
+    .glass-panel-body {
+        height: 100%;
+    }
+
+    /* Livewire table wrapper */
+    .queue-content {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
+        height: 100%;
+    }
+
+    /* Search filter */
+    .queue-filter-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+        border-radius: 14px;
+        background: rgba(0, 0, 0, 0.38);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(18px);
+
+        .queue-filter-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: $white;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            padding: 8px 10px;
+            font-family: $font-sans;
+
+            &::placeholder {
+                color: rgba(255, 255, 255, 0.35);
+                font-weight: 500;
+            }
+        }
+
+        .queue-filter-clear {
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 8px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: $font-sans;
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.16);
+                color: $white;
+            }
+        }
+    }
+
+    /* Patient list */
+    .patient-list {
+        flex: 1;
+        overflow-y: auto;
+        display: flex;
+        min-height: 0;
+        flex-direction: column;
+        gap: 10px;
+        scrollbar-width: none;
+        transition: opacity 0.3s;
+        padding-top: 10px;
+        padding-right: 2px;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+
+        &.fading {
+            opacity: 0.25;
+        }
+    }
+
+    .patient-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 18px;
+        border-radius: 16px;
+        transition: transform 0.2s;
+
+        &.serving {
+            background: linear-gradient(
+                135deg,
+                rgba(6, 78, 59, 0.45),
+                rgba(0, 0, 0, 0.4)
+            );
+            border: 1px solid rgba(52, 211, 153, 0.35);
+            box-shadow: 0 4px 20px -4px rgba(52, 211, 153, 0.15);
+            backdrop-filter: blur(18px);
+        }
+
+        &.waiting {
+            background: rgba(0, 0, 0, 0.42);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(18px);
+        }
+
+        .queue-badge {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 800;
+            flex-shrink: 0;
+
+            &.serving {
+                background: rgba(52, 211, 153, 0.2);
+                color: $green-soft;
+                border: 1px solid rgba(52, 211, 153, 0.3);
+            }
+
+            &.waiting {
+                background: rgba(255, 255, 255, 0.1);
+                color: rgba(255, 255, 255, 0.9);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+        }
+
+        .patient-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .patient-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: $white;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            letter-spacing: 0.02em;
+        }
+
+        .patient-meta {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+
+            .doctor {
+                color: rgba(255, 255, 255, 0.7);
+            }
+
+            .meta-dot {
+                width: 3px;
+                height: 3px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.2);
+            }
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 10px;
+            border-radius: 8px;
+            flex-shrink: 0;
+
+            &.serving {
+                background: rgba(52, 211, 153, 0.1);
+                border: 1px solid rgba(52, 211, 153, 0.2);
+
+                .dot {
+                    background: $green;
+                    position: relative;
+
+                    &::after {
+                        content: "";
+                        position: absolute;
+                        inset: 0;
+                        border-radius: 50%;
+                        background: $green;
+                        opacity: 0.6;
+                        animation: ping 1.4s cubic-bezier(0, 0, 0.2, 1)
+                            infinite;
+                    }
+                }
+
+                .status-text {
+                    color: $green;
+                }
+            }
+
+            &.waiting {
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+
+                .dot {
+                    background: $amber;
+                    box-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+                }
+
+                .status-text {
+                    color: rgba(251, 191, 36, 0.9);
+                }
+            }
+
+            .dot {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+            }
+
+            .status-text {
+                font-size: 9px;
+                font-weight: 700;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+            }
+        }
+    }
+
+    /* Empty state */
+    .empty-state {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+        min-height: 200px;
+        color: rgba(255, 255, 255, 0.25);
+        gap: 12px;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: $radius-lg;
+        backdrop-filter: blur(18px);
+        height: calc(100vh - 257px);
+
+        svg {
+            width: 44px;
+            height: 44px;
+        }
+
+        p {
+            font-size: 14px;
+            font-weight: 500;
+        }
+    }
+
+    /* Refresh button */
+    .refresh-btn {
+        margin-top: auto;
+        flex-shrink: 0;
+        width: 100%;
+        padding: 14px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.75);
+        font-family: $font-sans;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.2s;
+        backdrop-filter: blur(18px);
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: $white;
+        }
+
+        &:active {
+            transform: scale(0.98);
+        }
+
+        svg {
+            width: 16px;
+            height: 16px;
+        }
+    }
+
+    .spin {
+        animation: spin 0.8s linear infinite;
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
