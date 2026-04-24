@@ -420,7 +420,14 @@ function moneyFormat($amount, $currencyCode): string
     $currencies = new ISOCurrencies();
     $money = new Money((int) round($amount * 100), new Currency($currencyCode));
 
-    $numberFormatter = new NumberFormatter('en_US', NumberFormatter::CURRENCY);
+    $locale = app()->getLocale();
+    // Symfony Intl polyfill only supports "en" locale without ext-intl.
+    if (str_contains($locale, '_')) {
+        $locale = explode('_', $locale)[0];
+    } elseif (str_contains($locale, '-')) {
+        $locale = explode('-', $locale)[0];
+    }
+    $numberFormatter = new NumberFormatter($locale ?: 'en', NumberFormatter::CURRENCY);
     $moneyFormatter = new IntlMoneyFormatter($numberFormatter, $currencies);
 
     return $moneyFormatter->format($money);
